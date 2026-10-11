@@ -1,6 +1,5 @@
-# info.md
 
-**Título do projeto:** A PISTAS: Plataforma Inteligente de Stands Tolerante a Avarias do Sudeis
+# **Título do projeto:** A PISTAS: Plataforma Inteligente de Stands Tolerante a Avarias do Sudeis
 
 **Ano letivo:** 2026/2027
 
