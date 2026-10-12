@@ -178,7 +178,7 @@ def test_authentication_required_and_login_rules(server, login):
     import httpx
 
     anon = httpx.Client(base_url=server)
-    assert anon.get("/api/reservations").status_code == 403
+    assert anon.get("/api/reservations").status_code == 401
     assert anon.get("/health").status_code == 200
     bad = anon.post("/api/auth/login", json={"username": "tap", "password": "wrong"})
     assert bad.status_code == 401 and bad.json()["code"] == "INVALID_CREDENTIALS"
@@ -186,7 +186,7 @@ def test_authentication_required_and_login_rules(server, login):
     login("tap")
     assert _count("SELECT COUNT(*) FROM audit_log WHERE action = 'login'") == 1
     forged = httpx.Client(base_url=server, headers={"Authorization": "Bearer not.a.token"})
-    assert forged.get("/api/reservations").status_code == 403
+    assert forged.get("/api/reservations").status_code == 401
 
 
 def test_input_is_validated(login, day):

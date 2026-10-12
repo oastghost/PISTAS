@@ -44,13 +44,16 @@ export function Login() {
         {error && <p className="alert error" role="alert">{error}</p>}
         <button className="primary" disabled={busy}>{busy ? 'A entrar…' : 'Entrar'}</button>
 
-        <details className="demo">
-          <summary>Contas de demonstração (simuladas)</summary>
-          <p>
-            Palavra-passe <code>demo</code> para: <code>tap</code>, <code>easyjet</code> (despachantes),{' '}
-            <code>ana</code>, <code>atc</code> (controlador), <code>menzies</code>, <code>portway</code> (ground handlers).
-          </p>
-        </details>
+        {import.meta.env.VITE_USE_MOCK === 'true' && (
+          <details className="demo">
+            <summary>Contas de demonstração (simuladas)</summary>
+            <p>
+              Palavra-passe <code>demo</code> para: <code>tap</code>, <code>easyjet</code> (despachantes),{' '}
+              <code>ana</code>, <code>atc</code> (controlador), <code>menzies</code>, <code>portway</code> (ground
+              handlers).
+            </p>
+          </details>
+        )}
       </form>
     </main>
   )

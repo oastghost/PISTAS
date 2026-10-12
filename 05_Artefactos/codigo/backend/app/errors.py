@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 # Codes match ApiErrorCode in the frontend (src/api/client.ts).
 STATUS = {
     "INVALID_CREDENTIALS": 401,
+    "SESSION_EXPIRED": 401,
     "FORBIDDEN": 403,
     "NOT_FOUND": 404,
     "INVALID_INPUT": 400,

@@ -48,7 +48,7 @@ def create_token(user_id: int) -> str:
 
 def current_user(authorization: Annotated[str | None, Header()] = None) -> CurrentUser:
     if not authorization or not authorization.lower().startswith("bearer "):
-        raise ApiError("FORBIDDEN", "Sessão expirada. Inicie sessão novamente.")
+        raise ApiError("SESSION_EXPIRED", "Sessão expirada. Inicie sessão novamente.")
     try:
         claims = jwt.decode(
             authorization[7:],
@@ -58,14 +58,14 @@ def current_user(authorization: Annotated[str | None, Header()] = None) -> Curre
         )
         user_id = int(claims["sub"])
     except (jwt.PyJWTError, ValueError):
-        raise ApiError("FORBIDDEN", "Sessão expirada. Inicie sessão novamente.") from None
+        raise ApiError("SESSION_EXPIRED", "Sessão expirada. Inicie sessão novamente.") from None
 
     # The role always comes from the database, never from the token.
     with transaction() as cur:
         cur.execute("SELECT id, username, name, role, company FROM app_user WHERE id = %s", (user_id,))
         row = cur.fetchone()
     if row is None:
-        raise ApiError("FORBIDDEN", "Sessão expirada. Inicie sessão novamente.")
+        raise ApiError("SESSION_EXPIRED", "Sessão expirada. Inicie sessão novamente.")
     return CurrentUser(**row)
 
 

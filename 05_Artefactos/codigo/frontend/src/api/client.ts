@@ -2,6 +2,7 @@ import type { AircraftType, Notice, Report, Reservation, Stand, StandRequest, Us
 
 export type ApiErrorCode =
   | 'INVALID_CREDENTIALS'
+  | 'SESSION_EXPIRED'
   | 'FORBIDDEN'
   | 'NOT_FOUND'
   | 'INVALID_INPUT'

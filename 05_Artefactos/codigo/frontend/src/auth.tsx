@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { api } from './api'
+import { onSessionExpired } from './api/http'
 import type { User } from './types'
 
 interface AuthValue {
@@ -17,10 +18,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    api.currentUser().then((u) => {
-      setUser(u)
-      setReady(true)
-    })
+    onSessionExpired(() => setUser(null))
+    api.currentUser().then(
+      (u) => {
+        setUser(u)
+        setReady(true)
+      },
+      () => {
+        setUser(null)
+        setReady(true)
+      },
+    )
   }, [])
 
   const login = useCallback(async (username: string, password: string) => {

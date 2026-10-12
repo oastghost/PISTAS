@@ -1,7 +1,7 @@
 # Código da A PISTAS
 
 ```
-frontend/   React + Vite + TypeScript (por agora fala com uma API simulada em src/api/mock.ts)
+frontend/   React + Vite + TypeScript (fala com o backend em /api; VITE_USE_MOCK=true usa a API simulada)
 backend/    FastAPI, regras de reserva, testes
 db/         migrações numeradas, dados iniciais (stands do eAIP), spike do Galera
 docker-compose.yml   fase 1: um nó MariaDB. Fase 2: cluster Galera, 3 backends, nginx
@@ -25,6 +25,17 @@ python -m venv .venv
 Contas criadas pelo seed (todas com a palavra-passe `SEED_PASSWORD` do `.env`):
 `tap`, `easyjet` (despachantes), `ana`, `atc` (controlador), `menzies`, `portway` (ground handlers).
 Não existe registo de utilizadores na aplicação.
+
+## Arrancar o frontend
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173, reencaminha /api para o backend na porta 8000
+```
+
+Sem backend: `VITE_USE_MOCK=true npm run dev` usa os dados simulados (contas `tap`, `ana`, ... com a
+palavra-passe `demo`).
 
 ## Testes
 
