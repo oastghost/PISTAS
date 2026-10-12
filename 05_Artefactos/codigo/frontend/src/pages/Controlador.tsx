@@ -31,55 +31,75 @@ export function Controlador() {
   }
 
   return (
-    <div className="stack">
-      <h1>Plano em vigor</h1>
-      <p className="muted">
-        Vista só de leitura. Se a ANA não detetou um problema, escolha o voo no plano e use “Reportar”.
-      </p>
-      {plan.error && <p className="alert error">{plan.error}</p>}
+    <>
+      <div className="page-head">
+        <h1>Plano em vigor</h1>
+        <p>Vista só de leitura. Se a ANA não detetou um problema, escolha o voo no plano e reporte-o.</p>
+      </div>
+
+      {plan.error && (
+        <p className="msg error" role="alert">
+          {plan.error}
+        </p>
+      )}
 
       {plan.data && (
-        <>
-          <Timeline
-            stands={plan.data.stands}
-            aircraft={plan.data.aircraft}
-            reservations={plan.data.reservations}
-            selectedId={selected?.id}
-            onSelect={(r) => {
-              setSelected(r)
-              setSent(false)
-            }}
-          />
-
-          <form className="card" onSubmit={onSubmit}>
-            <h2>Reportar problema</h2>
-            {selected ? (
-              <p>
-                Voo selecionado: <strong>{selected.flightNumber}</strong> ({selected.company})
-              </p>
-            ) : (
-              <p className="muted">Clique num voo do plano para o selecionar.</p>
-            )}
-            <label>
-              Descrição
-              <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} maxLength={500} required />
-            </label>
-            {error && <p className="alert error" role="alert">{error}</p>}
-            {sent && <p className="alert ok" role="status">Reporte enviado à ANA.</p>}
-            <button className="primary" disabled={!selected || busy}>Reportar</button>
+        <div className="split">
+          <form className="panel" onSubmit={onSubmit}>
+            <div className="panel-head">
+              <h2>Reportar um problema</h2>
+            </div>
+            <div className="panel-body form">
+              {selected ? (
+                <p>
+                  Voo <strong>{selected.flightNumber}</strong>, {selected.company}
+                </p>
+              ) : (
+                <p className="muted">Clique num voo do plano para o selecionar.</p>
+              )}
+              <label className="field">
+                Descrição
+                <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} maxLength={500} required />
+              </label>
+              {error && (
+                <p className="msg error" role="alert">
+                  {error}
+                </p>
+              )}
+              {sent && (
+                <p className="msg ok" role="status">
+                  <strong>Reporte enviado.</strong> A ANA vai receber a descrição.
+                </p>
+              )}
+              <div className="form-actions">
+                <button className="primary" disabled={!selected || busy}>
+                  Enviar reporte
+                </button>
+              </div>
+            </div>
           </form>
 
-          <section className="card">
-            <h2>Alocações</h2>
+          <div className="stack">
+            <Timeline
+              stands={plan.data.stands}
+              aircraft={plan.data.aircraft}
+              reservations={plan.data.reservations}
+              selectedId={selected?.id}
+              onSelect={(r) => {
+                setSelected(r)
+                setSent(false)
+              }}
+            />
             <ReservationTable
+              title="Alocações"
               reservations={plan.data.reservations}
               stands={plan.data.stands}
               aircraft={plan.data.aircraft}
               empty="Não há alocações."
             />
-          </section>
-        </>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   )
 }

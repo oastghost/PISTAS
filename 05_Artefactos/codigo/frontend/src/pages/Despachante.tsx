@@ -95,162 +95,195 @@ export function Despachante() {
   const tooSmall = wanted !== undefined && !fits(wanted)
 
   return (
-    <div className="stack">
-      <h1>Pedir stand</h1>
+    <>
+      <div className="page-head">
+        <h1>Pedido de stand</h1>
+        <p>Escolha o stand pretendido. Se estiver livre e a aeronave couber, o pedido é aprovado de imediato.</p>
+      </div>
 
       {(notices.data ?? []).length > 0 && (
-        <section className="card notices" aria-label="Avisos da ANA">
-          <h2>Avisos da ANA</h2>
-          <ul>
+        <section className="panel alert" aria-label="Avisos da ANA" style={{ marginBottom: 20 }}>
+          <div className="panel-head">
+            <h2>Avisos da ANA</h2>
+          </div>
+          <ul className="notice-list">
             {notices.data!.map((n) => (
               <li key={n.id}>
-                <time>{formatDateTime(n.createdAt)}</time> {n.message}
+                <time>{formatDateTime(n.createdAt)}</time>
+                {n.message}
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      <form className="card form-grid" onSubmit={onSubmit}>
-        <label>
-          Número do voo
-          <input
-            value={flightNumber}
-            onChange={(e) => touch(setFlightNumber)(e.target.value)}
-            placeholder="TP1234"
-            required
-            maxLength={10}
-          />
-        </label>
-        <label>
-          Tipo de aeronave
-          <select value={aircraftType} onChange={(e) => touch(setAircraftType)(e.target.value)}>
-            {(plan.data?.aircraft ?? []).map((a) => (
-              <option key={a.code} value={a.code}>{a.label} · categoria {a.category}</option>
-            ))}
-          </select>
-        </label>
-        {aircraft && (
-          <p className="muted span-2">
-            Categoria {aircraft.category}, envergadura {aircraft.wingspanM.toLocaleString('pt-PT')} m:{' '}
-            {stands.filter(fits).length} stands podem receber este tipo de aeronave.
-          </p>
-        )}
+      <div className="split">
+        <form className="panel" onSubmit={onSubmit}>
+          <div className="panel-head">
+            <h2>Novo pedido</h2>
+          </div>
+          <div className="panel-body form">
+            <label className="field">
+              Número do voo
+              <input
+                value={flightNumber}
+                onChange={(e) => touch(setFlightNumber)(e.target.value)}
+                placeholder="TP1234"
+                required
+                maxLength={10}
+              />
+            </label>
 
-        <label className="span-2">
-          Stand pretendido
-          <select value={standId} onChange={(e) => touch(setStandId)(e.target.value)} required>
-            <option value="">Escolher stand…</option>
-            {apronNames.map((apron) => (
-              <optgroup key={apron} label={apron === 'Temporária' ? 'Apron temporário' : `Apron ${apron}`}>
-                {stands
-                  .filter((s) => s.apron === apron)
-                  .map((s) => (
-                    <option key={s.id} value={s.id} disabled={!fits(s)}>
-                      {s.name} · {s.critical}
-                      {fits(s) ? '' : ' (não aceita esta aeronave)'}
+            <label className="field">
+              Tipo de aeronave
+              <select value={aircraftType} onChange={(e) => touch(setAircraftType)(e.target.value)}>
+                {(plan.data?.aircraft ?? []).map((a) => (
+                  <option key={a.code} value={a.code}>
+                    {a.label}, categoria {a.category}
+                  </option>
+                ))}
+              </select>
+              {aircraft && (
+                <span className="hint">
+                  Envergadura {aircraft.wingspanM.toLocaleString('pt-PT')} m. {stands.filter(fits).length} de{' '}
+                  {stands.length} stands aceitam esta aeronave.
+                </span>
+              )}
+            </label>
+
+            <label className="field">
+              Stand pretendido
+              <select value={standId} onChange={(e) => touch(setStandId)(e.target.value)} required>
+                <option value="">Escolher stand</option>
+                {apronNames.map((apron) => (
+                  <optgroup key={apron} label={apron === 'Temporária' ? 'Apron temporário' : `Apron ${apron}`}>
+                    {stands
+                      .filter((s) => s.apron === apron)
+                      .map((s) => (
+                        <option key={s.id} value={s.id} disabled={!fits(s)}>
+                          {s.name}, {s.critical}
+                          {fits(s) ? '' : ' (não aceita esta aeronave)'}
+                        </option>
+                      ))}
+                  </optgroup>
+                ))}
+              </select>
+              <span className="hint">Também pode escolher o stand no plano, clicando no nome dele.</span>
+            </label>
+
+            <div className="form-row">
+              <label className="field">
+                Chegada ao stand
+                <input
+                  type="datetime-local"
+                  value={start}
+                  onChange={(e) => touch(setStart)(e.target.value)}
+                  required
+                />
+              </label>
+              <label className="field">
+                Saída do stand
+                <input type="datetime-local" value={end} onChange={(e) => touch(setEnd)(e.target.value)} required />
+              </label>
+            </div>
+
+            <label className="check">
+              <input
+                type="checkbox"
+                checked={wantHandling}
+                onChange={(e) => touch(setWantHandling)(e.target.checked)}
+              />
+              Pedir assistência em terra
+            </label>
+            {wantHandling && (
+              <label className="field">
+                Empresa de assistência em terra
+                <select value={handler} onChange={(e) => touch(setHandler)(e.target.value)} required>
+                  <option value="">Escolher empresa</option>
+                  {(handlers.data ?? []).map((h) => (
+                    <option key={h} value={h}>
+                      {h}
                     </option>
                   ))}
-              </optgroup>
-            ))}
-          </select>
-          <small className="muted">Também pode escolher o stand clicando no nome dele no plano, mais abaixo.</small>
-        </label>
+                </select>
+              </label>
+            )}
 
-        <label>
-          Chegada ao stand
-          <input type="datetime-local" value={start} onChange={(e) => touch(setStart)(e.target.value)} required />
-        </label>
-        <label>
-          Saída do stand
-          <input type="datetime-local" value={end} onChange={(e) => touch(setEnd)(e.target.value)} required />
-        </label>
+            {tooSmall && (
+              <p className="msg error" role="alert">
+                O {wanted.name} não aceita esta aeronave. Escolha outro stand ou outro tipo de aeronave.
+              </p>
+            )}
+            {error && (
+              <p className="msg error" role="alert">
+                {error}
+              </p>
+            )}
+            {alternatives && (
+              <div role="status">
+                {alternatives.length > 0 ? (
+                  <>
+                    <p className="muted">Stands livres neste período, do mais adequado para o menos adequado:</p>
+                    <ul className="alt-list">
+                      {alternatives.map((s) => (
+                        <li key={s.id}>
+                          <span>
+                            {s.name}, Apron {s.apron}
+                          </span>
+                          <button type="button" className="small" disabled={busy} onClick={() => takeAlternative(s)}>
+                            Pedir este stand
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <p className="muted">Não há stands alternativos livres para este voo neste período.</p>
+                )}
+              </div>
+            )}
+            {result && (
+              <p className="msg ok" role="status">
+                <strong>Pedido aprovado.</strong> Voo {result.flightNumber} no {standName(result.standId)}, das{' '}
+                {formatTime(result.start)} às {formatTime(result.end)}.
+              </p>
+            )}
 
-        <label className="check span-2">
-          <input
-            type="checkbox"
-            checked={wantHandling}
-            onChange={(e) => touch(setWantHandling)(e.target.checked)}
-          />
-          Pedir assistência em terra
-        </label>
-        {wantHandling && (
-          <label className="span-2">
-            Empresa de assistência em terra
-            <select value={handler} onChange={(e) => touch(setHandler)(e.target.value)} required>
-              <option value="">Escolher…</option>
-              {(handlers.data ?? []).map((h) => (
-                <option key={h} value={h}>{h}</option>
-              ))}
-            </select>
-          </label>
-        )}
-
-        <div className="span-2">
-          {tooSmall && (
-            <p className="alert error" role="alert">
-              O {wanted.name} não aceita esta aeronave. Escolha outro stand ou outro tipo de aeronave.
-            </p>
-          )}
-          {error && <p className="alert error" role="alert">{error}</p>}
-          {alternatives && (
-            <div role="status">
-              {alternatives.length > 0 ? (
-                <>
-                  <p className="muted">Stands livres neste período, do mais adequado para o menos adequado:</p>
-                  <ul className="suggestions">
-                    {alternatives.map((s) => (
-                      <li key={s.id}>
-                        <button type="button" disabled={busy} onClick={() => takeAlternative(s)}>
-                          Pedir {s.name} · Apron {s.apron}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : (
-                <p className="muted">Não há stands alternativos livres para este voo neste período.</p>
-              )}
+            <div className="form-actions">
+              <button className="primary" disabled={busy || plan.loading || !standId || tooSmall}>
+                {busy ? 'A enviar…' : 'Pedir stand'}
+              </button>
             </div>
-          )}
-          {result && (
-            <p className="alert ok" role="status">
-              Pedido aprovado: voo {result.flightNumber} no {standName(result.standId)}, das{' '}
-              {formatTime(result.start)} às {formatTime(result.end)}.
+          </div>
+        </form>
+
+        <div className="stack">
+          {plan.error && (
+            <p className="msg error" role="alert">
+              {plan.error}
             </p>
           )}
-          <button className="primary" disabled={busy || plan.loading || !standId || tooSmall}>
-            {busy ? 'A enviar…' : 'Pedir stand'}
-          </button>
+          {plan.data && (
+            <Timeline
+              stands={plan.data.stands}
+              aircraft={plan.data.aircraft}
+              reservations={plan.data.reservations}
+              highlightCompany={user?.company}
+              pickedStandId={standId}
+              canPick={fits}
+              onPickStand={(s) => touch(setStandId)(s.id)}
+            />
+          )}
+          <ReservationTable
+            title="Os meus pedidos"
+            reservations={mine}
+            stands={stands}
+            aircraft={plan.data?.aircraft ?? []}
+            showCompany={false}
+            empty="Ainda não fez nenhum pedido."
+          />
         </div>
-      </form>
-
-      <section className="card">
-        <h2>Os meus pedidos</h2>
-        {plan.error && <p className="alert error">{plan.error}</p>}
-        <ReservationTable
-          reservations={mine}
-          stands={stands}
-          aircraft={plan.data?.aircraft ?? []}
-          showCompany={false}
-          empty="Ainda não fez nenhum pedido."
-        />
-      </section>
-
-      {plan.data && (
-        <Timeline
-          stands={plan.data.stands}
-          aircraft={plan.data.aircraft}
-          reservations={plan.data.reservations}
-          highlightCompany={user?.company}
-          pickedStandId={standId}
-          canPick={fits}
-          onPickStand={(s) => {
-            touch(setStandId)(s.id)
-            window.scrollTo({ top: 0, behavior: 'smooth' })
-          }}
-        />
-      )}
-    </div>
+      </div>
+    </>
   )
 }

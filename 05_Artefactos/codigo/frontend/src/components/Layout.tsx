@@ -10,18 +10,22 @@ import type { Role } from '../types'
 export function RoleLayout({ role }: { role: Role }) {
   const { user, ready, logout } = useAuth()
 
-  if (!ready) return <p className="center muted">A carregar…</p>
+  if (!ready) return <p className="empty">A carregar…</p>
   if (!user) return <Navigate to="/login" replace />
   if (user.role !== role) return <Navigate to={homePath(user.role)} replace />
 
   return (
     <>
-      <header className="topbar">
-        <strong>A PISTAS</strong>
-        <span className="muted-light">
-          {ROLE_LABEL[user.role]} · {user.name}
+      <header className="appbar">
+        <span className="brand">A PISTAS</span>
+        <span className="where">Gestão de stands, Aeroporto de Lisboa (LPPT)</span>
+        <span className="who">
+          {user.name}
+          <small>{user.company ? `${ROLE_LABEL[user.role]}, ${user.company}` : ROLE_LABEL[user.role]}</small>
         </span>
-        <button className="ghost" onClick={() => void logout()}>Terminar sessão</button>
+        <button type="button" onClick={() => void logout()}>
+          Terminar sessão
+        </button>
       </header>
       <main className="page">
         <Outlet />

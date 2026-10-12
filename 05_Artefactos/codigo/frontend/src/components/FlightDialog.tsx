@@ -34,10 +34,10 @@ export function FlightDialog({ reservation: r, stand, aircraft, onClose }: Props
         if (e.target === ref.current) ref.current?.close()
       }}
     >
-      <div className="dialog-head">
+      <div className="panel-head">
         <h2 id="flight-dialog-title">Voo {r.flightNumber}</h2>
-        <button type="button" className="ghost-dark" onClick={() => ref.current?.close()} aria-label="Fechar">
-          ✕
+        <button type="button" className="small" onClick={() => ref.current?.close()}>
+          Fechar
         </button>
       </div>
       <dl className="details">
@@ -47,7 +47,7 @@ export function FlightDialog({ reservation: r, stand, aircraft, onClose }: Props
         <dt>Aeronave</dt>
         <dd>
           {aircraft ? aircraft.label : r.aircraftType}
-          {aircraft && <small> · categoria {aircraft.category}</small>}
+          {aircraft && <small>Categoria {aircraft.category}</small>}
         </dd>
 
         <dt>Assistência em terra</dt>
@@ -55,14 +55,18 @@ export function FlightDialog({ reservation: r, stand, aircraft, onClose }: Props
 
         <dt>Tempo em terra</dt>
         <dd>
-          {formatDateTime(r.start)} – {formatTime(r.end)}
-          <small> · {duration(r.start, r.end)}</small>
+          {formatDateTime(r.start)} a {formatTime(r.end)}
+          <small>{duration(r.start, r.end)}</small>
         </dd>
 
         <dt>Stand</dt>
         <dd>
           {stand ? stand.name : r.standId}
-          {stand && <small> · Apron {stand.apron} · {stand.critical}</small>}
+          {stand && (
+            <small>
+              Apron {stand.apron}, {stand.critical}
+            </small>
+          )}
         </dd>
       </dl>
     </dialog>

@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { dayStart, formatRange, toDateInput } from '../format'
 import type { AircraftType, Reservation, Stand } from '../types'
 import { FlightDialog } from './FlightDialog'
@@ -11,7 +11,7 @@ interface Props {
   stands: Stand[]
   aircraft: AircraftType[]
   reservations: Reservation[]
-  /** Reservations of this company are highlighted. */
+  /** Reservations of this company are drawn in the strong colour. */
   highlightCompany?: string | null
   selectedId?: string | null
   /** Called when a flight is clicked, in addition to opening its details. */
@@ -19,13 +19,13 @@ interface Props {
   /** When set, stand names become buttons that choose that stand for a bid. */
   onPickStand?(stand: Stand): void
   pickedStandId?: string | null
-  /** Stands for which this returns false are greyed out and cannot be picked. */
+  /** Stands for which this returns false cannot be picked. */
   canPick?(stand: Stand): boolean
 }
 
 const apronLabel = (a: string) => (a === 'Temporária' ? 'Apron temporário' : `Apron ${a}`)
 
-/** One row per stand, time on the x axis. Only approved reservations are drawn. */
+/** One row per stand, time across. Only approved reservations are drawn. */
 export function Timeline({
   stands,
   aircraft,
@@ -37,6 +37,13 @@ export function Timeline({
   pickedStandId,
   canPick,
 }: Props) {
+  // The clock only changes the "now" marker, so a minute is precise enough.
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 60_000)
+    return () => clearInterval(timer)
+  }, [])
+  const today = toDateInput(new Date(now))
   const [day, setDay] = useState(() => toDateInput(new Date()))
   const aprons = useMemo(() => [...new Set(stands.map((s) => s.apron))], [stands])
   // The first apron is shown by default. ALL shows every stand, grouped by apron.
@@ -63,9 +70,11 @@ export function Timeline({
     return reservations.filter((r) => r.status === 'approved' && ids.has(r.standId)).length
   }
 
+  const nowFraction = day === today ? (now - from) / DAY_MS : null
+
   return (
-    <section className="card">
-      <div className="card-head">
+    <section className="panel">
+      <div className="panel-head">
         <h2>Plano de stands</h2>
         <label className="inline">
           Dia
@@ -84,18 +93,18 @@ export function Timeline({
             onClick={() => setChoice(a)}
           >
             {a === ALL ? 'Todos' : apronLabel(a)}
-            <span className="tab-count">{approvedCount(a)}</span>
+            <span className="count">{approvedCount(a)}</span>
           </button>
         ))}
       </div>
 
-      <div className="timeline" role="table" aria-label="Plano de stands por hora">
-        <div className="tl-row tl-axis" role="row">
-          <div className="tl-label" role="columnheader">Stand</div>
-          <div className="tl-track">
+      <div className="plan" role="table" aria-label="Plano de stands por hora">
+        <div className="plan-row plan-axis" role="row">
+          <div className="plan-label" role="columnheader">Stand</div>
+          <div className="plan-track">
             {HOUR_TICKS.map((h) => (
-              <span key={h} className="tl-tick" style={{ left: `${(h / 24) * 100}%` }}>
-                {String(h % 24).padStart(2, '0')}h
+              <span key={h} className="plan-tick" style={{ left: `${(h / 24) * 100}%` }}>
+                {String(h % 24).padStart(2, '0')}:00
               </span>
             ))}
           </div>
@@ -104,36 +113,42 @@ export function Timeline({
         {visible.map((stand, i) => (
           <Fragment key={stand.id}>
             {apron === ALL && (i === 0 || visible[i - 1].apron !== stand.apron) && (
-              <div className="tl-group">{apronLabel(stand.apron)}</div>
+              <div className="plan-group">{apronLabel(stand.apron)}</div>
             )}
-            <div className={stand.id === pickedStandId ? 'tl-row picked' : 'tl-row'} role="row">
-              <div className="tl-label" role="rowheader">
-                {onPickStand ? (
-                  <button
-                    type="button"
-                    className="tl-pick"
-                    disabled={canPick ? !canPick(stand) : false}
-                    aria-pressed={stand.id === pickedStandId}
-                    title={canPick && !canPick(stand) ? 'Este stand não aceita a aeronave escolhida' : 'Pedir este stand'}
-                    onClick={() => onPickStand(stand)}
-                  >
-                    {stand.name}
-                  </button>
-                ) : (
-                  stand.name
-                )}
+            <div className={stand.id === pickedStandId ? 'plan-row picked' : 'plan-row'} role="row">
+              <div className="plan-label" role="rowheader">
+                <span className="name">
+                  {onPickStand ? (
+                    <button
+                      type="button"
+                      className="pick"
+                      disabled={canPick ? !canPick(stand) : false}
+                      aria-pressed={stand.id === pickedStandId}
+                      title={
+                        canPick && !canPick(stand)
+                          ? 'Este stand não aceita a aeronave escolhida'
+                          : 'Escolher este stand para o pedido'
+                      }
+                      onClick={() => onPickStand(stand)}
+                    >
+                      {stand.name}
+                    </button>
+                  ) : (
+                    stand.name
+                  )}
+                </span>
                 <small>{stand.critical}</small>
               </div>
-              <div className="tl-track" role="cell">
+              <div className="plan-track" role="cell">
                 {HOUR_TICKS.slice(1, -1).map((h) => (
-                  <span key={h} className="tl-grid" style={{ left: `${(h / 24) * 100}%` }} />
+                  <span key={h} className="plan-grid" style={{ left: `${(h / 24) * 100}%` }} />
                 ))}
                 {(byStand.get(stand.id) ?? []).map((r) => {
                   const start = Math.max(Date.parse(r.start), from)
                   const end = Math.min(Date.parse(r.end), from + DAY_MS)
                   if (end <= start) return null
                   const own = highlightCompany != null && r.company === highlightCompany
-                  const classes = ['tl-block', own ? 'own' : '', r.id === selectedId ? 'selected' : '']
+                  const classes = ['block', own ? 'own' : '', r.id === selectedId ? 'selected' : '']
                     .filter(Boolean)
                     .join(' ')
                   return (
@@ -145,7 +160,7 @@ export function Timeline({
                         left: `${((start - from) / DAY_MS) * 100}%`,
                         width: `${((end - start) / DAY_MS) * 100}%`,
                       }}
-                      title={`${r.flightNumber} · ${r.company} · ${formatRange(r.start, r.end)}`}
+                      title={`${r.flightNumber}, ${r.company}, ${formatRange(r.start, r.end)}`}
                       onClick={() => {
                         onSelect?.(r)
                         setOpenId(r.id)
@@ -159,6 +174,20 @@ export function Timeline({
             </div>
           </Fragment>
         ))}
+
+        {nowFraction !== null && nowFraction > 0 && nowFraction < 1 && (
+          <div
+            className="now-line"
+            style={{ left: `calc(var(--label) + (100% - var(--label)) * ${nowFraction})` }}
+            title="Agora"
+          />
+        )}
+      </div>
+
+      <div className="panel-body legend">
+        {highlightCompany && <span className="own">Voos de {highlightCompany}</span>}
+        <span>{highlightCompany ? 'Outras companhias' : 'Voos aprovados'}</span>
+        {nowFraction !== null && <span className="now">Hora atual</span>}
       </div>
 
       {open && (

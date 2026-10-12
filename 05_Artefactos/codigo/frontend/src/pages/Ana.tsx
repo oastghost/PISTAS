@@ -29,52 +29,81 @@ export function Ana() {
     plan.data?.reservations.find((r) => r.id === reservationId)?.flightNumber ?? reservationId
 
   return (
-    <div className="stack">
-      <h1>Revisão do plano</h1>
-      <p className="muted">
-        A ANA pode remover alocações. Não pode reorganizá-las. Quando remove, o despachante recebe um aviso com o
-        contacto da ANA.
-      </p>
+    <>
+      <div className="page-head">
+        <h1>Revisão do plano</h1>
+        <p>
+          A ANA pode remover alocações, não pode reorganizá-las. O despachante recebe um aviso com o contacto da ANA.
+        </p>
+      </div>
 
-      {error && <p className="alert error" role="alert">{error}</p>}
-      {plan.error && <p className="alert error">{plan.error}</p>}
+      <div className="stack">
+        {error && (
+          <p className="msg error" role="alert">
+            {error}
+          </p>
+        )}
+        {plan.error && (
+          <p className="msg error" role="alert">
+            {plan.error}
+          </p>
+        )}
 
-      {plan.data && (
-        <>
-          <Timeline stands={plan.data.stands} aircraft={plan.data.aircraft} reservations={plan.data.reservations} />
-          <section className="card">
-            <h2>Alocações</h2>
+        {plan.data && (
+          <>
+            <Timeline stands={plan.data.stands} aircraft={plan.data.aircraft} reservations={plan.data.reservations} />
             <ReservationTable
+              title="Alocações"
               reservations={plan.data.reservations}
               stands={plan.data.stands}
               aircraft={plan.data.aircraft}
               empty="Não há alocações."
               action={(r) => (
-                <button className="danger" disabled={removing === r.id} onClick={() => void remove(r.id, r.flightNumber)}>
+                <button
+                  type="button"
+                  className="danger small"
+                  disabled={removing === r.id}
+                  onClick={() => void remove(r.id, r.flightNumber)}
+                >
                   Remover
                 </button>
               )}
             />
-          </section>
-        </>
-      )}
-
-      <section className="card">
-        <h2>Reportes do controlador</h2>
-        {(reports.data ?? []).length === 0 ? (
-          <p className="muted">Sem reportes.</p>
-        ) : (
-          <ul className="plain">
-            {reports.data!.map((r) => (
-              <li key={r.id}>
-                <strong>{flightOf(r.reservationId)}</strong> · {formatDateTime(r.createdAt)} · {r.author}
-                <br />
-                {r.text}
-              </li>
-            ))}
-          </ul>
+          </>
         )}
-      </section>
-    </div>
+
+        <section className="panel">
+          <div className="panel-head">
+            <h2>Reportes do controlador</h2>
+          </div>
+          {(reports.data ?? []).length === 0 ? (
+            <p className="empty">Sem reportes.</p>
+          ) : (
+            <div className="table-scroll">
+              <table className="data">
+                <thead>
+                  <tr>
+                    <th>Voo</th>
+                    <th>Data</th>
+                    <th>Autor</th>
+                    <th>Descrição</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reports.data!.map((r) => (
+                    <tr key={r.id}>
+                      <td className="num">{flightOf(r.reservationId)}</td>
+                      <td className="num">{formatDateTime(r.createdAt)}</td>
+                      <td>{r.author}</td>
+                      <td>{r.text}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
+    </>
   )
 }
