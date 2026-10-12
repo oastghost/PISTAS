@@ -1,0 +1,674 @@
+[
+  {
+    "id": "104",
+    "name": "Stand 104",
+    "apron": "10",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "105",
+    "name": "Stand 105",
+    "apron": "10",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "106",
+    "name": "Stand 106",
+    "apron": "10",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "107",
+    "name": "Stand 107",
+    "apron": "10",
+    "critical": "B767-300ER",
+    "category": "D",
+    "max_wingspan_m": 47.57
+  },
+  {
+    "id": "108",
+    "name": "Stand 108",
+    "apron": "10",
+    "critical": "ATR72-600",
+    "category": "C",
+    "max_wingspan_m": 27.05
+  },
+  {
+    "id": "114",
+    "name": "Stand 114",
+    "apron": "11",
+    "critical": "B757-200",
+    "category": "D",
+    "max_wingspan_m": 38.05
+  },
+  {
+    "id": "115",
+    "name": "Stand 115",
+    "apron": "11",
+    "critical": "B757-200",
+    "category": "D",
+    "max_wingspan_m": 38.05
+  },
+  {
+    "id": "116",
+    "name": "Stand 116",
+    "apron": "11",
+    "critical": "B757-200",
+    "category": "D",
+    "max_wingspan_m": 38.05
+  },
+  {
+    "id": "117",
+    "name": "Stand 117",
+    "apron": "11",
+    "critical": "B757-200",
+    "category": "D",
+    "max_wingspan_m": 38.05
+  },
+  {
+    "id": "122",
+    "name": "Stand 122",
+    "apron": "12",
+    "critical": "B757-200",
+    "category": "D",
+    "max_wingspan_m": 38.05
+  },
+  {
+    "id": "123",
+    "name": "Stand 123",
+    "apron": "12",
+    "critical": "B757-200",
+    "category": "D",
+    "max_wingspan_m": 38.05
+  },
+  {
+    "id": "124",
+    "name": "Stand 124",
+    "apron": "12",
+    "critical": "B757-200",
+    "category": "D",
+    "max_wingspan_m": 38.05
+  },
+  {
+    "id": "125",
+    "name": "Stand 125",
+    "apron": "12",
+    "critical": "B757-200",
+    "category": "D",
+    "max_wingspan_m": 38.05
+  },
+  {
+    "id": "126",
+    "name": "Stand 126",
+    "apron": "12",
+    "critical": "A321NEO",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "141",
+    "name": "Stand 141",
+    "apron": "14",
+    "critical": "B767-400ER",
+    "category": "D",
+    "max_wingspan_m": 51.92
+  },
+  {
+    "id": "142",
+    "name": "Stand 142",
+    "apron": "14",
+    "critical": "A330-900NEO",
+    "category": "E",
+    "max_wingspan_m": 64
+  },
+  {
+    "id": "143",
+    "name": "Stand 143",
+    "apron": "14",
+    "critical": "A330-900NEO",
+    "category": "E",
+    "max_wingspan_m": 64
+  },
+  {
+    "id": "144",
+    "name": "Stand 144",
+    "apron": "14",
+    "critical": "A330-900NEO",
+    "category": "E",
+    "max_wingspan_m": 64
+  },
+  {
+    "id": "145",
+    "name": "Stand 145",
+    "apron": "14",
+    "critical": "A330-900NEO",
+    "category": "E",
+    "max_wingspan_m": 64
+  },
+  {
+    "id": "146",
+    "name": "Stand 146",
+    "apron": "14",
+    "critical": "B777-300ER",
+    "category": "E",
+    "max_wingspan_m": 64.8
+  },
+  {
+    "id": "147",
+    "name": "Stand 147",
+    "apron": "14",
+    "critical": "B767-300ERW",
+    "category": "D",
+    "max_wingspan_m": 51.9
+  },
+  {
+    "id": "200",
+    "name": "Stand 200",
+    "apron": "20",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "201",
+    "name": "Stand 201",
+    "apron": "20",
+    "critical": "B747-400",
+    "category": "E",
+    "max_wingspan_m": 64.4
+  },
+  {
+    "id": "202",
+    "name": "Stand 202",
+    "apron": "20",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "203",
+    "name": "Stand 203",
+    "apron": "20",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "204",
+    "name": "Stand 204",
+    "apron": "20",
+    "critical": "Code E",
+    "category": "E",
+    "max_wingspan_m": 65
+  },
+  {
+    "id": "205",
+    "name": "Stand 205",
+    "apron": "20",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "206",
+    "name": "Stand 206",
+    "apron": "20",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "207",
+    "name": "Stand 207",
+    "apron": "20",
+    "critical": "Code E",
+    "category": "E",
+    "max_wingspan_m": 65
+  },
+  {
+    "id": "208",
+    "name": "Stand 208",
+    "apron": "20",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "209",
+    "name": "Stand 209",
+    "apron": "20",
+    "critical": "B737-900",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "221",
+    "name": "Stand 221",
+    "apron": "22",
+    "critical": "B737-800",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "222",
+    "name": "Stand 222",
+    "apron": "22",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "223",
+    "name": "Stand 223",
+    "apron": "22",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "224",
+    "name": "Stand 224",
+    "apron": "22",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "225",
+    "name": "Stand 225",
+    "apron": "22",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "301",
+    "name": "Stand 301",
+    "apron": "30",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "302",
+    "name": "Stand 302",
+    "apron": "30",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "401",
+    "name": "Stand 401",
+    "apron": "40",
+    "critical": "A310-300",
+    "category": "D",
+    "max_wingspan_m": 43.9
+  },
+  {
+    "id": "402",
+    "name": "Stand 402",
+    "apron": "40",
+    "critical": "B757-200W",
+    "category": "D",
+    "max_wingspan_m": 41.1
+  },
+  {
+    "id": "403",
+    "name": "Stand 403",
+    "apron": "40",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "404",
+    "name": "Stand 404",
+    "apron": "40",
+    "critical": "B747-400",
+    "category": "E",
+    "max_wingspan_m": 64.4
+  },
+  {
+    "id": "405",
+    "name": "Stand 405",
+    "apron": "40",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "411",
+    "name": "Stand 411",
+    "apron": "41",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "412",
+    "name": "Stand 412",
+    "apron": "41",
+    "critical": "Code F",
+    "category": "F",
+    "max_wingspan_m": 80
+  },
+  {
+    "id": "413",
+    "name": "Stand 413",
+    "apron": "41",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "414",
+    "name": "Stand 414",
+    "apron": "41",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "415",
+    "name": "Stand 415",
+    "apron": "41",
+    "critical": "B747-400",
+    "category": "E",
+    "max_wingspan_m": 64.4
+  },
+  {
+    "id": "416",
+    "name": "Stand 416",
+    "apron": "41",
+    "critical": "A321-200",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "421",
+    "name": "Stand 421",
+    "apron": "42",
+    "critical": "A321-200",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "422",
+    "name": "Stand 422",
+    "apron": "42",
+    "critical": "B747-400",
+    "category": "E",
+    "max_wingspan_m": 64.4
+  },
+  {
+    "id": "423",
+    "name": "Stand 423",
+    "apron": "42",
+    "critical": "B737-800",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "424",
+    "name": "Stand 424",
+    "apron": "42",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "425",
+    "name": "Stand 425",
+    "apron": "42",
+    "critical": "AN124-100",
+    "category": "F",
+    "max_wingspan_m": 73.3
+  },
+  {
+    "id": "426",
+    "name": "Stand 426",
+    "apron": "42",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "501",
+    "name": "Stand 501",
+    "apron": "50",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "502",
+    "name": "Stand 502",
+    "apron": "50",
+    "critical": "Code D",
+    "category": "D",
+    "max_wingspan_m": 52
+  },
+  {
+    "id": "503",
+    "name": "Stand 503",
+    "apron": "50",
+    "critical": "B777-200",
+    "category": "E",
+    "max_wingspan_m": 60.93
+  },
+  {
+    "id": "504",
+    "name": "Stand 504",
+    "apron": "50",
+    "critical": "B747-400",
+    "category": "E",
+    "max_wingspan_m": 64.4
+  },
+  {
+    "id": "505",
+    "name": "Stand 505",
+    "apron": "50",
+    "critical": "A330-900NEO",
+    "category": "E",
+    "max_wingspan_m": 64
+  },
+  {
+    "id": "506",
+    "name": "Stand 506",
+    "apron": "50",
+    "critical": "B757-300W",
+    "category": "D",
+    "max_wingspan_m": 41.1
+  },
+  {
+    "id": "600",
+    "name": "Stand 600",
+    "apron": "60",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "601",
+    "name": "Stand 601",
+    "apron": "60",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "602",
+    "name": "Stand 602",
+    "apron": "60",
+    "critical": "A330-300",
+    "category": "E",
+    "max_wingspan_m": 60.3
+  },
+  {
+    "id": "603",
+    "name": "Stand 603",
+    "apron": "60",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "604",
+    "name": "Stand 604",
+    "apron": "60",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "605",
+    "name": "Stand 605",
+    "apron": "60",
+    "critical": "B747-400",
+    "category": "E",
+    "max_wingspan_m": 64.4
+  },
+  {
+    "id": "606",
+    "name": "Stand 606",
+    "apron": "60",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "607",
+    "name": "Stand 607",
+    "apron": "60",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "608",
+    "name": "Stand 608",
+    "apron": "60",
+    "critical": "B747-400",
+    "category": "E",
+    "max_wingspan_m": 64.4
+  },
+  {
+    "id": "609",
+    "name": "Stand 609",
+    "apron": "60",
+    "critical": "Code C",
+    "category": "C",
+    "max_wingspan_m": 36
+  },
+  {
+    "id": "701",
+    "name": "Stand 701",
+    "apron": "70",
+    "critical": "E195 LR",
+    "category": "C",
+    "max_wingspan_m": 28.72
+  },
+  {
+    "id": "702",
+    "name": "Stand 702",
+    "apron": "70",
+    "critical": "E195 LR",
+    "category": "C",
+    "max_wingspan_m": 28.72
+  },
+  {
+    "id": "703",
+    "name": "Stand 703",
+    "apron": "70",
+    "critical": "E195 LR",
+    "category": "C",
+    "max_wingspan_m": 28.72
+  },
+  {
+    "id": "704",
+    "name": "Stand 704",
+    "apron": "70",
+    "critical": "ATR72-600",
+    "category": "C",
+    "max_wingspan_m": 27.05
+  },
+  {
+    "id": "705",
+    "name": "Stand 705",
+    "apron": "70",
+    "critical": "ATR72-600",
+    "category": "C",
+    "max_wingspan_m": 27.05
+  },
+  {
+    "id": "706",
+    "name": "Stand 706",
+    "apron": "70",
+    "critical": "ATR72-600",
+    "category": "C",
+    "max_wingspan_m": 27.05
+  },
+  {
+    "id": "801",
+    "name": "Stand 801",
+    "apron": "80",
+    "critical": "B767-300ERW",
+    "category": "D",
+    "max_wingspan_m": 51.9
+  },
+  {
+    "id": "802",
+    "name": "Stand 802",
+    "apron": "80",
+    "critical": "B767-300ER",
+    "category": "D",
+    "max_wingspan_m": 47.57
+  },
+  {
+    "id": "803",
+    "name": "Stand 803",
+    "apron": "80",
+    "critical": "B767-300ER",
+    "category": "D",
+    "max_wingspan_m": 47.57
+  },
+  {
+    "id": "804",
+    "name": "Stand 804",
+    "apron": "80",
+    "critical": "A321-200",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "805",
+    "name": "Stand 805",
+    "apron": "80",
+    "critical": "A321-200",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "806",
+    "name": "Stand 806",
+    "apron": "80",
+    "critical": "A321-200",
+    "category": "C",
+    "max_wingspan_m": 35.8
+  },
+  {
+    "id": "351",
+    "name": "Stand 351",
+    "apron": "Temporária",
+    "critical": "Code E",
+    "category": "E",
+    "max_wingspan_m": 65
+  }
+]

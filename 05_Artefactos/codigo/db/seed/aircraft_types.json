@@ -1,0 +1,68 @@
+[
+  {
+    "code": "ATR72",
+    "label": "ATR 72-600",
+    "category": "C",
+    "wingspan_m": 27.05
+  },
+  {
+    "code": "E190",
+    "label": "Embraer 190",
+    "category": "C",
+    "wingspan_m": 28.72
+  },
+  {
+    "code": "A320",
+    "label": "Airbus A320",
+    "category": "C",
+    "wingspan_m": 35.8
+  },
+  {
+    "code": "A321",
+    "label": "Airbus A321",
+    "category": "C",
+    "wingspan_m": 35.8
+  },
+  {
+    "code": "B738",
+    "label": "Boeing 737-800",
+    "category": "C",
+    "wingspan_m": 35.8
+  },
+  {
+    "code": "B752",
+    "label": "Boeing 757-200",
+    "category": "D",
+    "wingspan_m": 38.05
+  },
+  {
+    "code": "B763",
+    "label": "Boeing 767-300ER",
+    "category": "D",
+    "wingspan_m": 47.57
+  },
+  {
+    "code": "A333",
+    "label": "Airbus A330-300",
+    "category": "E",
+    "wingspan_m": 60.3
+  },
+  {
+    "code": "B788",
+    "label": "Boeing 787-8",
+    "category": "E",
+    "wingspan_m": 60.12
+  },
+  {
+    "code": "B744",
+    "label": "Boeing 747-400",
+    "category": "E",
+    "wingspan_m": 64.4
+  },
+  {
+    "code": "B77W",
+    "label": "Boeing 777-300ER",
+    "category": "E",
+    "wingspan_m": 64.8
+  }
+]

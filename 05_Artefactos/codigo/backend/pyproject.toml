@@ -1,0 +1,28 @@
+[project]
+name = "pistas-backend"
+version = "0.1.0"
+description = "A PISTAS backend: stand reservations for Lisbon Airport (LPPT)"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pymysql>=1.1",
+  "argon2-cffi>=23.1",
+  "pyjwt>=2.8",
+  "cryptography>=42",
+  "pydantic-settings>=2.4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.6"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
