@@ -28,6 +28,14 @@ async def api_error_handler(_: Request, exc: ApiError) -> JSONResponse:
     )
 
 
+async def database_error_handler(_: Request, exc: Exception) -> JSONResponse:
+    """The database (or the whole cluster) is not answering: refuse cleanly, write nothing."""
+    return JSONResponse(
+        status_code=503,
+        content={"code": "UNAVAILABLE", "message": "Serviço temporariamente indisponível. Tente novamente."},
+    )
+
+
 async def validation_error_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
     return JSONResponse(
         status_code=400, content={"code": "INVALID_INPUT", "message": "Dados do pedido inválidos."}

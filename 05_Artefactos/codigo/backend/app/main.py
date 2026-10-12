@@ -1,3 +1,4 @@
+import pymysql
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from .config import get_settings
 from .db import transaction
-from .errors import ApiError, api_error_handler, validation_error_handler
+from .errors import ApiError, api_error_handler, database_error_handler, validation_error_handler
 from .routes import router
 
 
@@ -13,6 +14,7 @@ def create_app() -> FastAPI:
     app = FastAPI(title="A PISTAS", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_exception_handler(ApiError, api_error_handler)  # type: ignore[arg-type]
     app.add_exception_handler(RequestValidationError, validation_error_handler)  # type: ignore[arg-type]
+    app.add_exception_handler(pymysql.MySQLError, database_error_handler)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[o.strip() for o in get_settings().cors_origins.split(",") if o.strip()],
@@ -27,6 +29,13 @@ def create_app() -> FastAPI:
         try:
             with transaction() as cur:
                 cur.execute("SELECT 1")
+                # On Galera, only a node in the Primary component may take part.
+                cur.execute("SELECT @@wsrep_on AS on_")
+                if cur.fetchone()["on_"]:
+                    cur.execute("SHOW GLOBAL STATUS LIKE 'wsrep_cluster_status'")
+                    row = cur.fetchone()
+                    if row is None or row["Value"] != "Primary":
+                        raise RuntimeError("not in the primary component")
         except Exception:
             return JSONResponse(status_code=503, content={"status": "unavailable"})
         return JSONResponse(content={"status": "ok"})

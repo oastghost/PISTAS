@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=(ROOT / ".env", ROOT / "backend" / ".env"), extra="ignore")
 
     db_host: str = "127.0.0.1"
+    # Comma separated, preferred node first. Used instead of db_host when set (Galera).
+    db_hosts: str = ""
     db_port: int = 3306
     db_name: str = "pistas"
     db_user: str = "pistas"

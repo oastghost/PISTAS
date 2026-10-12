@@ -49,6 +49,10 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
     throw new ApiError('UNAVAILABLE', 'Sem ligação ao servidor. Tente novamente dentro de instantes.')
   }
 
+  if (response.status === 429) {
+    throw new ApiError('UNAVAILABLE', 'Demasiadas tentativas. Aguarde um minuto e tente novamente.')
+  }
+
   if (response.ok) {
     return response.status === 204 ? (undefined as T) : ((await response.json()) as T)
   }
