@@ -48,7 +48,7 @@ def connect(database: str | None = None, **overrides) -> pymysql.Connection:
         "charset": "utf8mb4",
         "cursorclass": DictCursor,
         "autocommit": False,
-        "connect_timeout": 3,
+        "connect_timeout": 2,
         "read_timeout": 20,
         "write_timeout": 20,
     }

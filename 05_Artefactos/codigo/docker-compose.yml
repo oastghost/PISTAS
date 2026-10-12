@@ -12,7 +12,7 @@ x-galera: &galera
     MARIADB_DATABASE: ${DB_NAME:-pistas}
     MARIADB_USER: ${DB_USER:-pistas}
     MARIADB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
-    BOOTSTRAP_NODE: galera1
+    BOOTSTRAP_NODE: ${BOOTSTRAP_NODE:-galera1}
   healthcheck:
     test: ["CMD-SHELL", "mariadb -uroot -p$$MARIADB_ROOT_PASSWORD -N -e \"SHOW STATUS LIKE 'wsrep_local_state_comment'\" | grep -q Synced"]
     interval: 5s

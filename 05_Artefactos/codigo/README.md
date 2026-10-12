@@ -4,16 +4,45 @@
 frontend/   React + Vite + TypeScript (fala com o backend em /api; VITE_USE_MOCK=true usa a API simulada)
 backend/    FastAPI, regras de reserva, testes
 db/         migrações numeradas, dados iniciais (stands do eAIP), spike do Galera
-docker-compose.yml   fase 1: um nó MariaDB. Fase 2: cluster Galera, 3 backends, nginx
+docker-compose.yml       fase 2: nginx, 3 backends, cluster Galera de 3 nós
+docker-compose.dev.yml   fase 1: um só nó MariaDB, para desenvolvimento e testes
+nginx/                   proxy inverso (TLS, limite de logins) e frontend compilado
 ```
 
-## Arrancar o backend (fase 1)
+## Arrancar o sistema completo (fase 2)
+
+```bash
+cp .env.example .env          # preencher as palavras-passe e o JWT_SECRET
+docker compose up -d --build
+```
+
+Abre em `https://localhost:8443` (certificado de desenvolvimento autoassinado). Arrancam 3 nós Galera,
+o migrate (aplica o esquema e o seed uma vez), 3 backends e o nginx.
+
+```bash
+docker compose ps                              # estado
+docker compose stop galera2 && docker compose start galera2   # parar e voltar a juntar um nó
+```
+
+Se o cluster inteiro tiver parado, o `galera1` arranca um cluster novo só se for o último nó a cair
+(`safe_to_bootstrap`). Caso contrário o MariaDB recusa. Ver `04_Documentacao_Tecnica/testes-de-faltas.md`.
+
+### Testes de faltas T1 a T8
+
+Param e matam contentores. Só correm com o sistema completo a funcionar e `PISTAS_CLUSTER=1`:
+
+```bash
+cd backend
+PISTAS_CLUSTER=1 .venv/Scripts/python -m pytest tests/cluster -v -s
+```
+
+## Arrancar o backend em desenvolvimento (fase 1)
 
 Precisa de Docker e Python 3.12 ou superior. Em `05_Artefactos/codigo`:
 
 ```bash
 cp .env.example .env          # preencher as palavras-passe e o JWT_SECRET
-docker compose up -d db
+docker compose -f docker-compose.dev.yml up -d db
 cd backend
 python -m venv .venv
 .venv/Scripts/python -m pip install -e ".[dev]"   # Linux/macOS: .venv/bin/python
