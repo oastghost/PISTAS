@@ -74,7 +74,7 @@ def server():
     thread.join(timeout=5)
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def clean_reservations(server):
     """Every test starts without reservations. Reference data and accounts stay."""
     from app.db import connect
@@ -120,7 +120,7 @@ class Client:
 
 
 @pytest.fixture
-def login(server):
+def login(server, clean_reservations):
     def _login(username: str) -> Client:
         return Client(server, username)
 

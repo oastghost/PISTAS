@@ -33,6 +33,11 @@ def _naive_utc(value: datetime) -> datetime:
     return value.astimezone(UTC).replace(tzinfo=None)
 
 
+def _minutes(value: datetime) -> int:
+    """Minutes since the epoch for a naive UTC datetime."""
+    return int(value.replace(tzinfo=UTC).timestamp() // 60)
+
+
 def _aware(row: dict) -> dict:
     return {
         **row,
@@ -194,23 +199,36 @@ def suggest(user: CurrentUser, req: StandRequestIn) -> list[dict]:
         cur.execute("SELECT id, name, apron, critical, category, max_wingspan_m FROM stand")
         stands = cur.fetchall()
         cur.execute(
-            "SELECT DISTINCT stand_id FROM stand_block WHERE occupied_from < %s AND occupied_to > %s",
+            "SELECT stand_id, occupied_from, occupied_to FROM stand_block "
+            "WHERE occupied_from < %s AND occupied_to > %s",
             (ends + gap, starts),
         )
-        busy = {r["stand_id"] for r in cur.fetchall()}
+        blocks = [
+            solver.Block(r["stand_id"], _minutes(r["occupied_from"]), _minutes(r["occupied_to"]))
+            for r in cur.fetchall()
+        ]
         cur.execute(
             "SELECT stand_id FROM removed_assignment WHERE company = %s AND flight_number = %s",
             (user.company, flight),
         )
-        banned = {r["stand_id"] for r in cur.fetchall()}
+        banned = frozenset(r["stand_id"] for r in cur.fetchall())
 
-    ids = solver.propose(
-        [solver.StandInfo(s["id"], s["apron"], float(s["max_wingspan_m"])) for s in stands],
-        wingspan_m=float(aircraft["wingspan_m"]),
-        busy=busy,
-        banned=banned,
-        wanted=req.stand_id,
-    )
+    try:
+        ids = solver.propose(
+            [solver.StandInfo(s["id"], s["apron"], float(s["max_wingspan_m"])) for s in stands],
+            blocks,
+            solver.Flight(
+                id=flight,
+                wingspan_m=float(aircraft["wingspan_m"]),
+                start=_minutes(starts),
+                end=_minutes(ends + gap),
+                wanted=req.stand_id,
+                banned=banned,
+            ),
+        )
+    except solver.SolverError:
+        # Nothing was written, so failing cleanly costs the dispatcher only a retry.
+        raise ApiError("UNAVAILABLE", "Não foi possível calcular alternativas agora.") from None
     by_id = {s["id"]: s for s in stands}
     return [by_id[i] for i in ids]
 
