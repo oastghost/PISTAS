@@ -1,6 +1,6 @@
 # Testes de faltas T1 a T8
 
-Data: 2026-10-12. Código: `05_Artefactos/codigo/backend/tests/cluster/`.
+Data: 2026-10-12. Código: `app/backend/tests/cluster/`.
 Execução: `PISTAS_CLUSTER=1 python -m pytest tests/cluster -v -s` com o sistema completo a correr.
 
 ## Ambiente
@@ -69,7 +69,7 @@ perder reservas confirmadas. Foi confirmado depois de `docker kill` aos 3 nós: 
 recusou arrancar. É o comportamento correto e exige um procedimento de recuperação:
 
 ```powershell
-cd 05_Artefactos/codigo
+cd app
 .\db\galera\recover.ps1
 ```
 

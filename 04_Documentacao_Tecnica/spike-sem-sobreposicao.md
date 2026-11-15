@@ -1,6 +1,6 @@
 # Spike: garantia de não sobreposição na base de dados
 
-Data: 2026-10-12. Código: `05_Artefactos/codigo/db/spike/`.
+Data: 2026-10-12. Código: `app/db/spike/`.
 
 ## Pergunta
 

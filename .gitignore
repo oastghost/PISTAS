@@ -9,3 +9,6 @@ node_modules/
 dist/
 *.egg-info/
 *.log
+
+# private notes
+app/backend/SOLVER_README.md
