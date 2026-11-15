@@ -1,0 +1,16 @@
+stateDiagram-v2
+  [*] --> TresNos
+  TresNos: 3 nós (normal)
+  DoisNos: 2 nós (quórum mantido, serviço normal)
+  UmNoSemQuorum: 1 nó sem quórum (non-Primary, recusa tudo, 503)
+  UmNoLimpo: 1 nó após paragens limpas (continua a servir)
+  Parado: 0 nós (safe_to_bootstrap)
+  TresNos --> DoisNos: nó morre ou fica isolado (T1, T5)
+  DoisNos --> TresNos: nó volta e sincroniza (T7)
+  DoisNos --> UmNoSemQuorum: segundo nó cai abruptamente (T6)
+  UmNoSemQuorum --> DoisNos: nós voltam, cluster refaz-se
+  DoisNos --> UmNoLimpo: paragem limpa do segundo nó
+  UmNoLimpo --> DoisNos: nó volta
+  UmNoSemQuorum --> Parado: último nó cai
+  UmNoLimpo --> Parado: último nó cai
+  Parado --> TresNos: recover.ps1 arranca o nó mais avançado

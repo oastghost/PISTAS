@@ -1,0 +1,26 @@
+flowchart LR
+  subgraph fe["Frontend (React + Vite + TypeScript)"]
+    pages["Páginas: Despachante · Ana · Controlador · Handler · Contas"]
+    api["api/client.ts (HTTP + token)"]
+    pages --> api
+  end
+  subgraph be["Backend (FastAPI)"]
+    routes["routes.py / admin.py<br/>endpoints /api"]
+    sec["security.py<br/>Argon2id + JWT"]
+    res["reservations.py<br/>regras, idempotência, repetição"]
+    solver["solver.py<br/>modelo dos stands"]
+    csp["csp.py<br/>motor CSP próprio"]
+    notify["notify.py<br/>thread de envio de e-mail"]
+    dbm["db.py<br/>ligação, failover entre nós"]
+    routes --> sec
+    routes --> res
+    res --> solver --> csp
+    res --> dbm
+    notify --> dbm
+  end
+  subgraph data["MariaDB Galera"]
+    tables[("reservation · stand_block<br/>notice · report · audit_log<br/>email_outbox · app_user")]
+  end
+  api -- "HTTPS /api" --> routes
+  dbm --> tables
+  notify -- SMTP --> smtp["Servidor de e-mail"]

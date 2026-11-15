@@ -1,0 +1,26 @@
+flowchart TB
+  user["Browser<br/>(despachante, ANA, controlador, handler)"]
+  subgraph host["Docker Compose"]
+    nginx["nginx 1.27<br/>TLS 1.2/1.3 · limite de logins<br/>balanceador + frontend React"]
+    subgraph apps["Backends x3"]
+      b1["backend1<br/>FastAPI + CSP"]
+      b2["backend2<br/>FastAPI + CSP"]
+      b3["backend3<br/>FastAPI + CSP"]
+    end
+    subgraph db["Galera, quórum 2 de 3"]
+      g1[("galera1")]
+      g2[("galera2")]
+      g3[("galera3")]
+    end
+    mail["Mailpit (SMTP de teste)"]
+  end
+  user -- "HTTPS :8443" --> nginx
+  nginx -- "HTTP, reenvio em falha" --> b1 & b2 & b3
+  b1 -. "prefere" .-> g1
+  b2 -. "prefere" .-> g2
+  b3 -. "prefere" .-> g3
+  b1 & b2 & b3 -- "passa a outro nó se falhar" --> db
+  g1 <-- "wsrep" --> g2
+  g2 <-- "wsrep" --> g3
+  g1 <-- "wsrep" --> g3
+  b1 & b2 & b3 -- "SMTP (outbox)" --> mail

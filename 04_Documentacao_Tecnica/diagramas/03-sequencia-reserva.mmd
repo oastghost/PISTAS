@@ -1,0 +1,25 @@
+sequenceDiagram
+  actor D as Despachante
+  participant N as nginx
+  participant B as Backend (1 de 3)
+  participant S as Solver CSP
+  participant G as Galera (3 nós)
+  D->>N: POST /api/reservations (requestId, voo, stand, horas)
+  N->>B: reencaminha (TLS terminado)
+  B->>B: valida JWT, perfil, prefixo do voo
+  B->>G: INSERT reservation e stand_block (1 transação)
+  alt stand livre
+    G-->>B: COMMIT (certificação do cluster)
+    B-->>D: 201 aprovado
+  else sobreposição (UNIQUE ... WITHOUT OVERLAPS)
+    G-->>B: erro de chave duplicada
+    B-->>D: 409 recusado
+    D->>B: POST /api/reservations/suggestions
+    B->>G: lê fotografia do plano
+    B->>S: propõe(voo, stands, blocos)
+    S-->>B: até 5 stands alternativos
+    B-->>D: alternativas (nada foi escrito)
+  else corrida entre nós (erro 1213)
+    G-->>B: deadlock de certificação
+    B->>G: repete (até 6 vezes, mesmo requestId)
+  end

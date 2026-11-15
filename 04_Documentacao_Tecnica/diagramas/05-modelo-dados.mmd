@@ -1,0 +1,47 @@
+erDiagram
+  airline ||--o{ airline_prefix : "tem prefixos"
+  airline ||--o{ app_user : "agrupa (pelo nome)"
+  app_user ||--o{ reservation : "created_by"
+  stand ||--o{ reservation : recebe
+  aircraft_type ||--o{ reservation : "tipo"
+  reservation ||--o| stand_block : "bloqueia (só se approved)"
+  stand ||--o{ stand_block : ocupa
+  reservation ||--o{ notice : "aviso à companhia"
+  reservation ||--o{ report : "reporte do controlador"
+  stand ||--o{ removed_assignment : "stand vedado ao voo"
+  app_user ||--o{ audit_log : regista
+  email_outbox }o--|| report : "um e-mail por conta ANA"
+  app_user {
+    bigint id PK
+    string username UK
+    string password_hash "Argon2id"
+    enum role
+    string company
+    bool active
+    bool must_change_password
+  }
+  stand {
+    string id PK
+    string apron
+    decimal max_wingspan_m
+  }
+  reservation {
+    char36 id PK
+    char36 request_id UK "idempotência"
+    string stand_id FK
+    string flight_number
+    string company
+    datetime starts_at
+    datetime ends_at
+    enum status "approved ou removed"
+  }
+  stand_block {
+    string stand_id FK
+    period occupied "UNIQUE stand_id, occupied WITHOUT OVERLAPS"
+  }
+  email_outbox {
+    char36 id PK
+    enum status
+    int attempts
+    datetime next_try_at
+  }

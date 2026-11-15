@@ -1,0 +1,20 @@
+sequenceDiagram
+  actor D as Despachante
+  participant N as nginx
+  participant B1 as backend1
+  participant B2 as backend2
+  participant G2 as galera2
+  participant G1 as galera1
+  Note over B1,G2: docker kill backend1 e galera2 (SIGKILL)
+  D->>N: POST /api/reservations (requestId = X)
+  N->>B1: tentativa 1
+  B1--xN: erro / timeout (2 s)
+  Note over N: backend1 marcado em falha 5 s (max_fails=2)
+  N->>B2: tentativa 2, mesmo requestId X
+  B2->>G2: INSERT
+  G2--xB2: ligação recusada
+  B2->>G1: passa ao nó seguinte
+  G1-->>B2: COMMIT (quórum 2 de 3 mantido)
+  B2-->>N: 201
+  N-->>D: 201 aprovado (sem erro visível)
+  Note over D,G1: Reenvio do mesmo X devolve a mesma reserva (idempotente)
