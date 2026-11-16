@@ -54,7 +54,7 @@ O objetivo geral é permitir reservar stands no LPPT sem conflitos e com tolerâ
 
 ### 2.1. Metodologia utilizada
 
-Desenvolvimento incremental, em duas fases, como previsto na 1.ª entrega. Na fase 1 construí o sistema completo num só nó, com a regra de não sobreposição validada antes de escrever o backend (um spike em InnoDB e em Galera). Na fase 2 distribuí o sistema por três backends e três nós de base de dados e testei falhas. Escolhi esta ordem para ter sempre uma versão a funcionar antes de acrescentar a complexidade da distribuição. As decisões ficam registadas por escrito em `04_Documentacao_Tecnica/`, e cada funcionalidade foi desenvolvida num ramo próprio (Figura 1).
+Desenvolvimento incremental, em duas fases, como previsto na 1.ª entrega. Na fase 1 construí o sistema completo num só nó, com a regra de não sobreposição validada antes de escrever o backend (um spike em InnoDB e em Galera). Na fase 2 distribuí o sistema por três backends e três nós de base de dados e testei falhas. Escolhi esta ordem para ter sempre uma versão a funcionar antes de acrescentar a complexidade da distribuição. As decisões ficam registadas por escrito em `04_Documentacao_Tecnica/`, e cada funcionalidade ficou registada em commits no GitHub.
 
 ### 2.2. Ferramentas utilizadas
 
@@ -76,17 +76,17 @@ Escolhi a MariaDB porque já trabalhei com ela e com o MySQL. O Galera replica o
 
 ### 2.4. Estrutura da equipa
 
-O trabalho é individual e foi aprovado pelos docentes. Sou o responsável por toda a conceção, desenvolvimento, testes e documentação. O histórico do repositório (Figura 1) é o registo do meu contributo.
+O trabalho é individual e foi aprovado pelos docentes. Sou o responsável por toda a conceção, desenvolvimento, testes e documentação. O histórico de commits no GitHub é o registo do meu contributo.
 
 ## 3. Resultados
 
 ### 3.1. Descrição da solução desenvolvida
 
-**Arquitetura.** O browser fala apenas com o nginx, por HTTPS (Figura 10). O nginx termina o TLS, serve o frontend e reparte os pedidos `/api` por três backends idênticos e sem estado. Cada backend prefere um nó Galera diferente e passa para outro se este falhar. Os nós replicam de forma síncrona e só aceitam escritas enquanto tiverem a maioria (2 de 3). Os componentes e as suas ligações estão na Figura 11 e o modelo de dados na Figura 14.
+**Arquitetura.** O browser fala apenas com o nginx, por HTTPS (Figura 9). O nginx termina o TLS, serve o frontend e reparte os pedidos `/api` por três backends idênticos e sem estado. Cada backend prefere um nó Galera diferente e passa para outro se este falhar. Os nós replicam de forma síncrona e só aceitam escritas enquanto tiverem a maioria (2 de 3). Os componentes e as suas ligações estão na Figura 10 e o modelo de dados na Figura 13.
 
-**A regra principal.** A tabela `stand_block` tem uma linha por reserva ativa e a restrição `UNIQUE (stand_id, occupied WITHOUT OVERLAPS)`. O período ocupado inclui 30 minutos de espera entre voos. A base de dados recusa qualquer reserva que se sobreponha, seja qual for o backend que a enviou. Cada pedido traz um identificador gerado pelo cliente, por isso repetir um pedido devolve a mesma reserva e nunca cria outra. É isto que torna seguro o nginx reenviar um POST falhado para outro backend (Figuras 12 e 13). Quando dois nós aceitam pedidos sobrepostos ao mesmo tempo, o perdedor recebe o erro 1213 e o backend repete o pedido, por isso o despachante só vê uma recusa verdadeira.
+**A regra principal.** A tabela `stand_block` tem uma linha por reserva ativa e a restrição `UNIQUE (stand_id, occupied WITHOUT OVERLAPS)`. O período ocupado inclui 30 minutos de espera entre voos. A base de dados recusa qualquer reserva que se sobreponha, seja qual for o backend que a enviou. Cada pedido traz um identificador gerado pelo cliente, por isso repetir um pedido devolve a mesma reserva e nunca cria outra. É isto que torna seguro o nginx reenviar um POST falhado para outro backend (Figuras 11 e 12). Quando dois nós aceitam pedidos sobrepostos ao mesmo tempo, o perdedor recebe o erro 1213 e o backend repete o pedido, por isso o despachante só vê uma recusa verdadeira.
 
-**Tolerância a faltas.** Não há ponto único de falha: três backends e três nós. O nginx faz verificação de saúde passiva e reenvia pedidos falhados. O `/health` devolve 503 quando o backend não consegue escrever. Os testes T1 a T8 (Figura 15) matam backends e nós com `docker kill` durante o uso, isolam um nó da rede e matam dois nós de três. Os testes passaram, sem reservas duplicadas. O estado do cluster em cada situação está na Figura 3. Quando o cluster perde a maioria o sistema escolhe recusar escritas (503) a arriscar uma duplicação, e recupera sozinho quando os nós voltam. A queda dos três nós exige um procedimento de recuperação (`recover.ps1`), testado com os dados intactos.
+**Tolerância a faltas.** Não há ponto único de falha: três backends e três nós. O nginx faz verificação de saúde passiva e reenvia pedidos falhados. O `/health` devolve 503 quando o backend não consegue escrever. Os testes T1 a T8 (Figura 14) matam backends e nós com `docker kill` durante o uso, isolam um nó da rede e matam dois nós de três. Os testes passaram, sem reservas duplicadas. O estado do cluster em cada situação está na Figura 2. Quando o cluster perde a maioria o sistema escolhe recusar escritas (503) a arriscar uma duplicação, e recupera sozinho quando os nós voltam. A queda dos três nós exige um procedimento de recuperação (`recover.ps1`), testado com os dados intactos.
 
 **Inteligência artificial: solver CSP.** Cada voo é uma variável e o seu valor é um stand. As restrições unárias exigem que a aeronave caiba, que a ANA não tenha retirado esse stand ao voo e que ninguém o ocupe nesse período. A restrição binária proíbe dois voos sobrepostos no mesmo stand. O custo mínimo prefere o stand pedido, depois o mesmo apron, e poupa os stands grandes para aeronaves grandes. O motor (`csp.py`, 145 linhas) usa consistência de nó, AC-3, backtracking com MRV e grau, forward checking e branch and bound, e devolve as k melhores soluções de forma determinística. O solver ainda não é totalmente fiável: passa nos testes descritos, mas não os cobre todos, e continua em validação. Só propõe e nunca escreve na base de dados: quem decide é a base de dados, por isso um erro do solver nunca cria uma reserva duplicada. Foi testado em problemas clássicos (N-rainhas, coloração do mapa da Austrália), contra um oráculo simples em 150 cenários aleatórios sobre os 84 stands reais, e contra força bruta em 40 cenários.
 
@@ -101,16 +101,16 @@ O trabalho é individual e foi aprovado pelos docentes. Sou o responsável por t
 
 ### 3.2. Funcionalidades principais
 
-- Pedido de stand por voo, aeronave e período, com aprovação automática (Figura 5).
+- Pedido de stand por voo, aeronave e período, com aprovação automática (Figura 4).
 - Verificação de conflitos garantida pela base de dados.
 - Até cinco stands alternativos propostos pelo solver CSP quando o pedido é recusado.
-- Revisão do plano pela ANA, que só pode remover alocações (Figura 6).
+- Revisão do plano pela ANA, que só pode remover alocações (Figura 5).
 - Aviso à companhia quando uma alocação é removida, com o contacto da ANA.
-- Gestão de companhias, prefixos de voo e contas pelo supervisor da ANA, com registo de alterações (Figura 7).
+- Gestão de companhias, prefixos de voo e contas pelo supervisor da ANA, com registo de alterações (Figura 6).
 - Primeiro início de sessão com mudança obrigatória de palavra-passe.
-- Pedido de ground handling, visível para o handler (Figura 9), que atribui a equipa internamente.
-- Vista do controlador com botão de reporte (Figura 8) e aviso na página da ANA.
-- Início de sessão com permissões por papel (Figura 4).
+- Pedido de ground handling, visível para o handler (Figura 8), que atribui a equipa internamente.
+- Vista do controlador com botão de reporte (Figura 7) e aviso na página da ANA.
+- Início de sessão com permissões por papel (Figura 3).
 - Funcionamento mantido quando um backend ou um nó da base de dados falha.
 
 ### 3.3. Contributos relevantes
@@ -151,16 +151,15 @@ Todas as imagens têm pelo menos 3000 px no maior lado, sem marcas de água e se
 
 ### a) Processo de trabalho
 
-![](../02_Imagens/08_git_historico.png)
-*Figura 1. Histórico do repositório: ramos de funcionalidade e commits*
+N/A. O histórico de commits está no repositório GitHub.
 
 ### b) Conceitos
 
 ![](../04_Documentacao_Tecnica/diagramas/00-casos-de-uso.png)
-*Figura 2. Diagrama de casos de uso: atores e funcionalidades da PISTAS*
+*Figura 1. Diagrama de casos de uso: atores e funcionalidades da PISTAS*
 
 ![](../04_Documentacao_Tecnica/diagramas/06-estados-cluster.png)
-*Figura 3. Estados do cluster de base de dados e o que provoca cada transição*
+*Figura 2. Estados do cluster de base de dados e o que provoca cada transição*
 
 ### c) Protótipos e e) Mockups
 
@@ -169,55 +168,55 @@ N/A. A interface foi desenvolvida diretamente em código, primeiro contra uma AP
 ### d) Interfaces
 
 ![](../02_Imagens/01_login.png)
-*Figura 4. Início de sessão*
+*Figura 3. Início de sessão*
 
 ![](../02_Imagens/02_despachante_pedido.png)
-*Figura 5. Pedido de stand (despachante), com avisos da ANA, plano por hora e lista de pedidos*
+*Figura 4. Pedido de stand (despachante), com avisos da ANA, plano por hora e lista de pedidos*
 
 ![](../02_Imagens/03_ana_plano.png)
-*Figura 6. Revisão do plano pela ANA, com alocações e botão de remover*
+*Figura 5. Revisão do plano pela ANA, com alocações e botão de remover*
 
 ![](../02_Imagens/04_supervisor_contas.png)
-*Figura 7. Gestão de companhias, prefixos e contas (supervisor da ANA)*
+*Figura 6. Gestão de companhias, prefixos e contas (supervisor da ANA)*
 
 ![](../02_Imagens/05_controlador.png)
-*Figura 8. Vista do controlador, com reporte de stand incorreto*
+*Figura 7. Vista do controlador, com reporte de stand incorreto*
 
 ![](../02_Imagens/06_handler.png)
-*Figura 9. Vista do ground handler, com os pedidos de assistência em terra*
+*Figura 8. Vista do ground handler, com os pedidos de assistência em terra*
 
 ### f) Artefactos produzidos
 
 ![](../04_Documentacao_Tecnica/diagramas/01-implantacao.png)
-*Figura 10. Diagrama de implantação: nginx, 3 backends, cluster Galera de 3 nós*
+*Figura 9. Diagrama de implantação: nginx, 3 backends, cluster Galera de 3 nós*
 
 ![](../04_Documentacao_Tecnica/diagramas/02-componentes.png)
-*Figura 11. Diagrama de componentes: frontend, backend (rotas, segurança, reservas, solver CSP) e base de dados*
+*Figura 10. Diagrama de componentes: frontend, backend (rotas, segurança, reservas, solver CSP) e base de dados*
 
 ![](../04_Documentacao_Tecnica/diagramas/03-sequencia-reserva.png)
-*Figura 12. Sequência de um pedido de stand: aprovação, recusa com alternativas e corrida entre nós*
+*Figura 11. Sequência de um pedido de stand: aprovação, recusa com alternativas e corrida entre nós*
 
 ![](../04_Documentacao_Tecnica/diagramas/04-sequencia-falha.png)
-*Figura 13. Sequência com falha de um backend e de um nó da base de dados durante um pedido*
+*Figura 12. Sequência com falha de um backend e de um nó da base de dados durante um pedido*
 
 ![](../04_Documentacao_Tecnica/diagramas/05-modelo-dados.png)
-*Figura 14. Modelo de dados*
+*Figura 13. Modelo de dados*
 
 ### g) Testes
 
 ![](../02_Imagens/09_testes_faltas.png)
-*Figura 15. Resultados dos testes de faltas T1 a T8*
+*Figura 14. Resultados dos testes de faltas T1 a T8*
 
 ### h) Produto final
 
-As Figuras 4 a 9 mostram o produto final em funcionamento.
+As Figuras 3 a 8 mostram o produto final em funcionamento.
 
 ## Ficheiros técnicos
 
-- **Arquitetura do sistema:** Figuras 10 e 11.
-- **Diagramas UML:** casos de uso (Figura 2), componentes (Figura 11), sequência (Figuras 12 e 13), implantação (Figura 10) e estados (Figura 3).
-- **Estrutura da base de dados:** Figura 14 e as migrações em `app/db/migrations/`.
-- **Capturas da aplicação:** Figuras 4 a 9.
+- **Arquitetura do sistema:** Figuras 9 e 10.
+- **Diagramas UML:** casos de uso (Figura 1), componentes (Figura 10), sequência (Figuras 11 e 12), implantação (Figura 9) e estados (Figura 2).
+- **Estrutura da base de dados:** Figura 13 e as migrações em `app/db/migrations/`.
+- **Capturas da aplicação:** Figuras 3 a 8.
 - **Documentação técnica:** `04_Documentacao_Tecnica/` (solver, spike de não sobreposição, testes de faltas, contas e companhias).
 - **Repositório GitHub:** https://github.com/oastghost/PISTAS
 
